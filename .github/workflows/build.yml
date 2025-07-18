@@ -27,12 +27,22 @@ jobs:
           path: .buildozer
           key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('buildozer.spec') }}
           
+      - name: Debug - List files
+        run: |
+          echo "Current directory contents:"
+          ls -la
+          echo "Buildozer spec exists:"
+          ls -la buildozer.spec || echo "buildozer.spec not found"
+          
       - name: Build with Buildozer
         uses: ArtemSBulgakov/buildozer-action@v1
         id: buildozer
         with:
-          command: buildozer android debug
+          command: buildozer android debug --verbose
           buildozer_version: stable
+        env:
+          # Enable verbose logging
+          PYTHONUNBUFFERED: 1
           
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
