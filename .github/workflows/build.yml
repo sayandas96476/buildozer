@@ -2,49 +2,40 @@ name: CI
 on:
   push:
     branches: [ main ]
+
 jobs:
   build:
     runs-on: ubuntu-20.04
+
     steps:
-      - uses: actions/checkout@v2
-      
-      # Used to cache dependencies with a timeout
-      - name: Get Date
+uses: actions/checkout@v2
+
+      used to cache dependencies with a timeout
+name: Get Date
         id: get-date
         run: |
           echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
         shell: bash
-        
-      - name: Cache Buildozer global directory
+
+name: Cache Buildozer global directory
         uses: actions/cache@v2
         with:
           path: .buildozer_global
           key: buildozer-global-${{ hashFiles('buildozer.spec') }} # Replace with your path
-          
-      - name: Cache Buildozer local directory
-        uses: actions/cache@v2
+
+uses: actions/cache@v2
         with:
           path: .buildozer
           key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('buildozer.spec') }}
-          
-      - name: Debug - List files
-        run: |
-          echo "Current directory contents:"
-          ls -la
-          echo "Buildozer spec exists:"
-          ls -la buildozer.spec || echo "buildozer.spec not found"
-          
-      - name: Build with Buildozer
+
+name: Build with Buildozer
         uses: ArtemSBulgakov/buildozer-action@v1
         id: buildozer
         with:
-          command: buildozer android debug --verbose
+          command: buildozer android debug
           buildozer_version: stable
-        env:
-          # Enable verbose logging
-          PYTHONUNBUFFERED: 1
-          
-      - name: Upload artifacts
+
+name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: package
